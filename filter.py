@@ -16,48 +16,64 @@ def openfile(file):
     except FileNotFoundError:
         print("Oops!  That was no valid number.  Try again...")
 
-def parse_arguments(parser):
-    parser.add_argument('-f', type=str, dest='file')
-    parser.add_argument('-i', type=str, nargs='+', dest='id')
-    parser.add_argument('-k', type=str, nargs='+', dest='task')
-    parser.add_argument('-e', type=str, nargs='+', dest='env')
-    parser.add_argument('-l', type=str, nargs='+', dest='loc')
-    parser.add_argument('-t', type=str, nargs='+', dest='team')
-    return parser.parse_args()
 
-def argument_list(args):
-    # append every argument list
-    arg_list = []
-    if args.id:
-        arg_list = arg_list + args.id
+class argFilter(argparse.ArgumentParser):
+    def __init__(self,**kwarg) -> None:
+        argparse.ArgumentParser.__init__(self,**kwarg)
+    def parse_arguments(self):
+        self.add_argument('-f', type=str, dest='file')
+        self.add_argument('-i', type=str, nargs='+', dest='id')
+        self.add_argument('-k', type=str, nargs='+', dest='task')
+        self.add_argument('-e', type=str, nargs='+', dest='env')
+        self.add_argument('-l', type=str, nargs='+', dest='loc')
+        self.add_argument('-t', type=str, nargs='+', dest='team')
+        
+        self.args = self.parse_args()
+
+    def list_filter(self, list):
+        #new_set = set(list)
+        filtered_list = filter( self.is_in_subset, list)
+        return filtered_list
+
+    def is_in_subset(self, server):
+        return self.arg_set.issubset( set(server) )
+
+
+    def argument_set(self):
+        # append every argument list
+        self.arg_list = []
+        if self.args.id:
+            self.arg_list = self.arg_list + self.args.id
+        
+        if self.args.task:
+            self.arg_list = self.arg_list + self.args.task
+
+        if self.args.env:
+            self.arg_list = self.arg_list + self.args.env
+
+        if self.args.loc:
+            self.arg_list = self.arg_list + self.args.loc
+
+        if self.args.team:
+            self.arg_list = self.arg_list + self.args.team
+        
+        self.arg_set = set(self.arg_list)
     
-    if args.task:
-        arg_list = arg_list + args.task
-
-    if args.env:
-        arg_list = arg_list + args.env
-
-    if args.loc:
-        arg_list = arg_list + args.loc
-
-    if args.team:
-        arg_list = arg_list + args.team
     
-    return arg_list
-
+        
 
 # hold all the information necessary to parse the command line into Python data types.
-parser = argparse.ArgumentParser(description='Inventory Filter.')
-args = parse_arguments(parser)
+parser = argFilter(description='Inventory Filter.')
+parser.parse_arguments()
+parser.argument_set()
 
-list = openfile(args.file)
+lista = openfile(parser.args.file)
 
-filter = argument_list(args)
+filtered_list = list( parser.list_filter(lista) )
 
-print(filter)
-
-for line in list:
+for line in filtered_list:
     print(*line)
+
 '''
 for row in list:
     if args.id:
