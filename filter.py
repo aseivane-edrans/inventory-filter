@@ -9,20 +9,33 @@ def openfile(file):
     except FileNotFoundError:
         print("Oops!  That was no valid number.  Try again...")
 
+def parse_arguments(parser):
+    parser.add_argument('-f', type=str, dest='file')
+    parser.add_argument('-i', type=str, nargs='+', dest='id')
+    parser.add_argument('-k', type=str, nargs='+', dest='task')
+    parser.add_argument('-e', type=str, nargs='+', dest='env')
+    parser.add_argument('-l', type=str, nargs='+', dest='loc')
+    parser.add_argument('-t', type=str, nargs='+', dest='team')
+    return parser.parse_args()
 
-spamreader = openfile()
-if(spamreader):
-    for row in spamreader:
-        print(row)
 
+
+# hold all the information necessary to parse the command line into Python data types.
+parser = argparse.ArgumentParser(description='Inventory Filter.')
+args = parse_arguments(parser)
+
+list = openfile(args.file)
+
+
+for line in list:
+    print(*line)
 '''
-parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('integers', metavar='N', type=int, nargs='+',
-                    help='an integer for the accumulator')
-parser.add_argument('--sum', dest='accumulate', action='store_const',
-                    const=sum, default=max,
-                    help='sum the integers (default: find the max)')
+for row in list:
+    if args.id:
+        if args.id not in row:
 
-args = parser.parse_args()
-print(args.accumulate(args.integers))
-'''
+
+
+if(list):
+    printTable(list)
+    '''
