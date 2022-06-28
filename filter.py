@@ -1,6 +1,13 @@
 import argparse
 import csv
-
+#from prettytable import PrettyTable
+'''
+def printTable(list):
+    table = PrettyTable()
+    table.field_names = ["id", "task", "environment", "location", "team"]
+    table.add_rows( list )
+    print (table)'''
+    
 def openfile(file):
     try:
         with open(file, newline='') as csvfile:
