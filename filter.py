@@ -2,24 +2,26 @@ import argparse
 import csv
 from prettytable import PrettyTable
 
-def printTable(list):
-    table = PrettyTable()
-    table.field_names = ["id", "task", "environment", "location", "team"]
-    table.add_rows( list )
-    print (table)
+def printTable(table):
+    new_table = PrettyTable()
+    new_table.field_names = ["id", "task", "environment", "location", "team"]
+    new_table.add_rows( table )
+    print (new_table)
     
-def openfile(file):
+def openfile(server_file):
     try:
-        with open(file, newline='') as csvfile:
-            spamreader = csv.reader(csvfile, delimiter='.')
-            return list(spamreader)
+        with open(server_file, newline='') as csvfile:
+            opened_csv = csv.reader(csvfile, delimiter='.')
+            return list(opened_csv)
     except FileNotFoundError:
         print("Oops!  That was no valid number.  Try again...")
 
 
 class argFilter(argparse.ArgumentParser):
+
     def __init__(self,**kwarg) -> None:
         argparse.ArgumentParser.__init__(self,**kwarg)
+        
     def parse_arguments(self):
         self.add_argument('-f', type=str, dest='file')
         self.add_argument('-i', type=str, dest='id')
@@ -30,9 +32,9 @@ class argFilter(argparse.ArgumentParser):
         
         self.args = self.parse_args()
 
-    def list_filter(self, list):
+    def list_filter(self, clean_list):
         #new_set = set(list)
-        filtered_list = filter( self.is_in_subset, list)
+        filtered_list = filter( self.is_in_subset, clean_list)
         return filtered_list
 
     def is_in_subset(self, server):
@@ -67,9 +69,9 @@ parser = argFilter(description='Inventory Filter.')
 parser.parse_arguments()
 parser.argument_set()
 
-lista = openfile(parser.args.file)
+server_list = openfile(parser.args.file)
 
-filtered_list = list( parser.list_filter(lista) )
+filtered_list = list( parser.list_filter(server_list) )
 
 if(filtered_list):
     printTable(filtered_list)
