@@ -18,6 +18,25 @@ def parse_arguments(parser):
     parser.add_argument('-t', type=str, nargs='+', dest='team')
     return parser.parse_args()
 
+def argument_list(args):
+    # append every argument list
+    arg_list = []
+    if args.id:
+        arg_list = arg_list + args.id
+    
+    if args.task:
+        arg_list = arg_list + args.task
+
+    if args.env:
+        arg_list = arg_list + args.env
+
+    if args.loc:
+        arg_list = arg_list + args.loc
+
+    if args.team:
+        arg_list = arg_list + args.team
+    
+    return arg_list
 
 
 # hold all the information necessary to parse the command line into Python data types.
@@ -26,6 +45,9 @@ args = parse_arguments(parser)
 
 list = openfile(args.file)
 
+filter = argument_list(args)
+
+print(filter)
 
 for line in list:
     print(*line)
