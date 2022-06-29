@@ -14,7 +14,8 @@ def openfile(server_file):
             opened_csv = csv.reader(csvfile, delimiter='.')
             return list(opened_csv)
     except FileNotFoundError:
-        print("Oops!  That was no valid number.  Try again...")
+        print("File doesn't exist")
+        exit()
 
 
 class argFilter(argparse.ArgumentParser):
@@ -33,7 +34,7 @@ class argFilter(argparse.ArgumentParser):
         self.args = self.parse_args()
 
     def list_filter(self, clean_list):
-        #new_set = set(list)
+        self.argument_set()
         filtered_list = filter( self.is_in_subset, clean_list)
         return filtered_list
 
@@ -66,12 +67,18 @@ class argFilter(argparse.ArgumentParser):
 
 # hold all the information necessary to parse the command line into Python data types.
 parser = argFilter(description='Inventory Filter.')
+# parse the arguments
 parser.parse_arguments()
-parser.argument_set()
 
+#opens the file and returns a list with server parameters
 server_list = openfile(parser.args.file)
 
+# filters the server_list passed to the filter. Returns a filtered list
 filtered_list = list( parser.list_filter(server_list) )
 
+# if filtered_list has data, prints it
 if(filtered_list):
     printTable(filtered_list)
+else:
+    print ( "No match for the input")
+    exit()
